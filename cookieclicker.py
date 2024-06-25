@@ -1,6 +1,8 @@
+import threading
+import time
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option("detach", True)
@@ -14,5 +16,29 @@ eng.click()
 time.sleep(5)
 cookie = driver.find_element(By.ID, "bigCookie")
 
+## TIME LIMIT
+
+# def upgrade():
+#     while True:
+#         time.sleep(5)
+#
+#         buys = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled, .product.unlocked.enabled")
+#         print(len(buys))
+#
+#         for i in buys:
+#             i.click()
+#             print("Clicked")
+#
+#
+# thread_upgrades = threading.Thread(target=upgrade)
+# thread_upgrades.daemon = True
+# thread_upgrades.start()
+
 while True:
     cookie.click()
+    buys = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled, .product.unlocked.enabled")
+    print(len(buys))
+
+    for i in buys:
+        i.click()
+        print("Clicked")
