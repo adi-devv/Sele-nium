@@ -33,5 +33,5 @@ LN.send_keys("Noonesson")
 email.send_keys("IancSonsonSon@gmail.com")
 Butt.send_keys(Keys.ENTER)
 
-time.sleep(2)
+time.sleep()
 driver.switch_to.window(driver.window_handles[0])
