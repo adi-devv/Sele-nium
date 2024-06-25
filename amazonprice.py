@@ -17,7 +17,6 @@ print(price.text)
 searchbar = driver.find_element(By.ID, value="twotabsearchtextbox")
 searchbar.send_keys("Black Sport Shoes", Keys.ENTER)
 
-
 # A new Tab...
 driver.execute_script("window.open('');")
 driver.switch_to.window(driver.window_handles[1])
