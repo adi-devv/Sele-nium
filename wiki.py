@@ -7,7 +7,7 @@ chrome_options.add_experimental_option("detach", True)
 driver = webdriver.Chrome()
 driver.get("https://en.wikipedia.org/wiki/Main_Page")
 a = driver.find_element(By.CSS_SELECTOR, value="#articlecount a")
-]]
+
 print(a.text)
 a.click()
 driver.back()
