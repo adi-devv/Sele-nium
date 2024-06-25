@@ -30,7 +30,7 @@ def upgrade():
             u = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled")
             p = driver.find_elements(By.CSS_SELECTOR, ".product.unlocked.enabled")
             print(p)
-            for i in u+p:
+            for i in u + p:
                 driver.execute_script("arguments[0].scrollIntoView();", i)
                 i.click()
                 print("Clicked")
@@ -40,7 +40,6 @@ def upgrade():
 
 thread_upgrades = threading.Thread(target=upgrade)
 thread_upgrades.daemon = True
-
 thread_upgrades.start()
 
 while True:

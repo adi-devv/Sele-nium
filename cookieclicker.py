@@ -30,7 +30,7 @@ cookie = driver.find_element(By.ID, "bigCookie")
 #             print("Clicked")
 #
 #
-# thread_upgrades = threading.Thread(target=upgrade)
+# thread_upgrades = threading.Thread(target=upgrade)0l
 # thread_upgrades.daemon = True
 # thread_upgrades.start()
 
