@@ -40,6 +40,7 @@ def upgrade():
 
 thread_upgrades = threading.Thread(target=upgrade)
 thread_upgrades.daemon = True
+
 thread_upgrades.start()
 
 while True:
