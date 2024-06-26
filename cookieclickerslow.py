@@ -18,8 +18,8 @@ eng = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#langSel
 eng.click()
 time.sleep(5)
 cookie = wait.until(EC.presence_of_all_elements_located((By.ID, "bigCookie")))[0]
-gotit = driver.find_element(By.LINK_TEXT, "Got it!")
-gotit.click()
+gotIt = driver.find_element(By.LINK_TEXT, "Got it!")
+gotIt.click()
 
 i = 0
 
