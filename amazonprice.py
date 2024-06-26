@@ -17,7 +17,7 @@ print(price.text)
 searchbar = driver.find_element(By.ID, value="twotabsearchtextbox")
 searchbar.send_keys("Black Sport Shoes", Keys.ENTER)
 
-# A New Tab...
+# A New Tab....
 driver.execute_script("window.open('');")
 driver.switch_to.window(driver.window_handles[1])
 driver.get("https://secure-retreat-92358.herokuapp.com/")
