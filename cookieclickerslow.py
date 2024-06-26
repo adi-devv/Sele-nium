@@ -34,11 +34,16 @@ def upgrade():
 
             u = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled")
             p = driver.find_elements(By.CSS_SELECTOR, ".product.unlocked.enabled")[::-1]
-            close = driver.find_elements(By.CLASS_NAME, "close")[::-1]
+            try:
+                close = driver.find_element(By.CSS_SELECTOR, ".framed.close.sidenote")
+                p.append(close)
+            except Exception as e:
+                print(e)
+                pass
 
-            for v in u + p + close:
+            for v in u + p:
                 if "crate upgrade enabled" in v.get_attribute("class") or "product unlocked enabled" in v.get_attribute(
-                        "class") or "close" in v.get_attribute("class"):
+                        "class") or "framed close sidenote" in v.get_attribute("class"):
                     driver.execute_script("arguments[0].scrollIntoView();", v)
                     v.click()
                     print("Clicked")
