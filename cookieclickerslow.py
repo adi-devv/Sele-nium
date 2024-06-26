@@ -66,3 +66,4 @@ while lim * 60 >= time.time() - start:
 
 print(driver.find_element(By.ID, "cookies").text)
 driver.quit()
+#
