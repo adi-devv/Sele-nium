@@ -27,7 +27,7 @@ def upgrade():
     try:
         while True:
             i += 1
-            time.sleep(10 + i / 10)
+            time.sleep(5 + i / 10)
             print(i)
 
             u = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled")
@@ -51,10 +51,11 @@ thread_upgrades.daemon = True
 thread_upgrades.start()
 
 start = time.time()
-lim = 1200
+lim = 5  # duration
 
-while lim >= time.time() - start:
+while lim * 60 >= time.time() - start:
     cookie.click()
     print(time.time() - start)
 
-print(driver.find_element(By.ID, "cookies").text, driver.find_element(By.ID, "cookiesPerSecond").text)
+print(driver.find_element(By.ID, "cookies").text)
+driver.quit()
