@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 options = webdriver.ChromeOptions()
 options.add_experimental_option("detach", True)
 
-options.add_argument(r"user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data")  # Update this path
+options.add_argument(r"user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data")
 options.add_argument("profile-directory=Default")
 
 driver = webdriver.Chrome(options=options)
