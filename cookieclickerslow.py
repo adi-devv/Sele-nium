@@ -29,7 +29,7 @@ def upgrade():
     try:
         while True:
             i += 1
-            time.sleep(10 + i / 10)
+            time.sleep(10)
             print(i)
 
             u = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled")
