@@ -18,6 +18,8 @@ eng = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#langSel
 eng.click()
 time.sleep(5)
 cookie = wait.until(EC.presence_of_all_elements_located((By.ID, "bigCookie")))[0]
+gotit = driver.find_element(By.LINK_TEXT, "Got it!")
+gotit.click()
 
 i = 0
 
@@ -27,16 +29,16 @@ def upgrade():
     try:
         while True:
             i += 1
-            time.sleep(5 + i / 10)
+            time.sleep(10 + i / 10)
             print(i)
 
             u = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled")
             p = driver.find_elements(By.CSS_SELECTOR, ".product.unlocked.enabled")[::-1]
-            close = driver.find_elements(By.CLASS_NAME, "close")
+            close = driver.find_elements(By.CLASS_NAME, "close")[::-1]
 
             for v in u + p + close:
                 if "crate upgrade enabled" in v.get_attribute("class") or "product unlocked enabled" in v.get_attribute(
-                        "class"):
+                        "class") or "close" in v.get_attribute("class"):
                     driver.execute_script("arguments[0].scrollIntoView();", v)
                     v.click()
                     print("Clicked")
