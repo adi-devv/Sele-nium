@@ -20,6 +20,8 @@ time.sleep(5)
 cookie = wait.until(EC.presence_of_all_elements_located((By.ID, "bigCookie")))[0]
 
 i = 0
+
+
 def upgrade():
     global i
     try:
@@ -29,15 +31,16 @@ def upgrade():
             print(i)
 
             u = driver.find_elements(By.CSS_SELECTOR, ".crate.upgrade.enabled")
-            p = driver.find_elements(By.CSS_SELECTOR, ".product.unlocked.enabled")
+            p = driver.find_elements(By.CSS_SELECTOR, ".product.unlocked.enabled")[::-1]
+            close = driver.find_elements(By.CLASS_NAME, "close")
 
-            for v in u + p:
-                try:
+            for v in u + p + close:
+                if "crate upgrade enabled" in v.get_attribute("class") or "product unlocked enabled" in v.get_attribute(
+                        "class"):
                     driver.execute_script("arguments[0].scrollIntoView();", v)
                     v.click()
                     print("Clicked")
-                except Exception as e:
-                    print(f"Error clicking element: {e}")
+
     except Exception as e:
         print(e)
         upgrade()
@@ -47,9 +50,11 @@ thread_upgrades = threading.Thread(target=upgrade)
 thread_upgrades.daemon = True
 thread_upgrades.start()
 
-while True:
-    try:
-        cookie.click()
-    except Exception as e:
-        print(f"Error clicking cookie: {e}")
-        cookie = wait.until(EC.presence_of_all_elements_located((By.ID, "bigCookie")))[0]
+start = time.time()
+lim = 1200
+
+while lim >= time.time() - start:
+    cookie.click()
+    print(time.time() - start)
+
+print(driver.find_element(By.ID, "cookies").text, driver.find_element(By.ID, "cookiesPerSecond").text)
