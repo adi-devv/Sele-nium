@@ -60,11 +60,16 @@ for j in jobs:
     #     continueApplying.click()
 
     while True:
-        proceed = check_all(By.XPATH, '/html/body/div[3]/div/div/div[2]/div/div[2]/form/footer/div[2]/button')[-1]
+        pathx = '/html/body/div[3]/div/div/div[2]/div/div[2]/form/footer/div[2]/button'
+        if check(By.LINK_TEXT, 'Submit application'):
+            pathx = '/html/body/div[3]/div/div/div[2]/div/div[2]/div/footer/div[3]'
+
+        proceed = check_all(By.XPATH, pathx)[-1]
         if proceed.get_attribute("aria-label") == "Submit application":
             flw = check(By.XPATH, '//*[@id="follow-company-checkbox"]')
             flw.click()
         proceed.click()
+
     close2 = check(By.XPATH, '')
     wait.until(
         EC.presence_of_all_elements_located((By.XPATH, '/html/body/div[3]/div/div/button'))).click()
