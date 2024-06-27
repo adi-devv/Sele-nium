@@ -43,6 +43,7 @@ def check_all(criteria, val, parent=driver):
 
 for j in jobs:
     j.click()
+    time.sleep(0.2)
     easyapply = check(By.CLASS_NAME, "jobs-apply-button--top-card")
     if easyapply:
         easyapply.click()
@@ -53,25 +54,21 @@ for j in jobs:
         print("Closed", jobs.index(j))
         continue
 
+    continueApplying = check(By.CSS_SELECTOR,
+                             ".jobs-apply-button artdeco-button artdeco-button--3 artdeco-button--primary ember-view")
+    if continueApplying:
+        continueApplying.click()
 
-    # continueApplying = check(By.CSS_SELECTOR,
-    #                          ".jobs-apply-button artdeco-button artdeco-button--3 artdeco-button--primary ember-view")
-    # if continueApplying:
-    #     continueApplying.click()
-
-    while True:
-        pathx = '/html/body/div[3]/div/div/div[2]/div/div[2]/form/footer/div[2]/button'
-        if check(By.LINK_TEXT, 'Submit application'):
-            pathx = '/html/body/div[3]/div/div/div[2]/div/div[2]/div/footer/div[3]'
-
-        proceed = check_all(By.XPATH, pathx)[-1]
-        if proceed.get_attribute("aria-label") == "Submit application":
-            flw = check(By.XPATH, '//*[@id="follow-company-checkbox"]')
-            flw.click()
+    b = True
+    while b is True:
+        time.sleep(3)
+        proceed = check_all(By.CSS_SELECTOR, '.display-flex.justify-flex-end.ph5.pv4 button')[-1]
+        if proceed.get_attribute("aria-label") == 'Submit application':
+            check(By.CLASS_NAME, 'job-details-easy-apply-footer__section').click()
+            b = False
         proceed.click()
 
-    close2 = check(By.XPATH, '')
-    wait.until(
-        EC.presence_of_all_elements_located((By.XPATH, '/html/body/div[3]/div/div/button'))).click()
-
-
+    close2 = wait.until(
+        EC.presence_of_element_located((By.XPATH, '/html/body/div[3]/div/div/button'))
+    )
+    close2.click()
