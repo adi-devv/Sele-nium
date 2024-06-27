@@ -24,6 +24,8 @@ def check(criteria, val):
         return False
 
 
+
+
 for j in jobs:
     j.click()
     easyApply = check(By.CLASS_NAME, "jobs-apply-button--top-card")
