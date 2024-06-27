@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 options = webdriver.ChromeOptions()
 options.add_experimental_option("detach", True)
 
-#options.add_argument(r"user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data")  # Update this path
+options.add_argument(r"user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data")  # Update this path
 options.add_argument("profile-directory=Person 1")
 
 driver = webdriver.Chrome(options=options)
@@ -29,11 +29,10 @@ for j in jobs:
     easyApply = check(By.CLASS_NAME, "jobs-apply-button--top-card")
     if easyApply:
         easyApply.click()
-        continueApplying = check(By.CLASS_NAME, "jobs-apply-button artdeco-button artdeco-button--3 artdeco-button--primary ember-view")
+        continueApplying = check(By.CLASS_NAME,
+                                 "jobs-apply-button artdeco-button artdeco-button--3 artdeco-button--primary ember-view")
         if continueApplying:
             continueApplying.click()
 
         while True:
             next = check(By.CSS_SELECTOR, ".display-flex.justify-flex-end.ph5.pv4 ")
-
-
