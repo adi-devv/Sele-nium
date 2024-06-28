@@ -33,7 +33,7 @@ def check(criteria, val, parent=driver):
     try:
         print(parent)
         element = parent.find_element(criteria, val)
-        driver.execute_script("arguments[0].scrollIntoView();", element)
+        driver.execute_script("arguments[0].scrollIntoView({behavior:'smooth'});", element)
 
         return element
     except Exception as e:
@@ -50,11 +50,11 @@ def check_all(criteria, val, parent=driver):
         print(e)
         return None
 
-
+time.sleep(3)
 jobs = wait_for_elements((By.XPATH, '//*[@id="main"]/div/div[2]/div[1]/div/ul/li/div/div'))
 
 for j in jobs:
-    driver.execute_script("arguments[0].scrollIntoView();", j)
+    driver.execute_script("arguments[0].scrollIntoView({behavior:'smooth'});", j)
 
     j.click()
     time.sleep(1)
@@ -63,7 +63,7 @@ for j in jobs:
         easyApply.click()
         print("Started", easyApply.get_attribute("aria-label"))
     else:
-        close = wait_for_element((By.XPATH, './/button'), j)
+        close = check(By.XPATH, './/button', j)
         close.click()
         print("Closed", jobs.index(j))
         continue
@@ -85,6 +85,7 @@ for j in jobs:
             b = False
         proceed.click()
     else:
-        close2 = wait_for_element((By.XPATH, "//*[@aria-label='Dismiss']"))
+        time.sleep(2)
+        close2 = check(By.XPATH, "//*[@aria-label='Dismiss']")
         close2.click()
     time.sleep(1)
