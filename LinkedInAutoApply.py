@@ -33,7 +33,6 @@ def check(criteria, val, parent=driver):
     try:
         print(parent)
         element = parent.find_element(criteria, val)
-        driver.execute_script("arguments[0].scrollIntoView({behavior:'smooth'});", element)
 
         return element
     except Exception as e:
@@ -50,42 +49,47 @@ def check_all(criteria, val, parent=driver):
         print(e)
         return None
 
+
 time.sleep(3)
 jobs = wait_for_elements((By.XPATH, '//*[@id="main"]/div/div[2]/div[1]/div/ul/li/div/div'))
-
+print(len(jobs))
 for j in jobs:
-    driver.execute_script("arguments[0].scrollIntoView({behavior:'smooth'});", j)
-
-    j.click()
-    time.sleep(1)
-    easyApply = check(By.CLASS_NAME, "jobs-apply-button--top-card")
-    if easyApply:
-        easyApply.click()
-        print("Started", easyApply.get_attribute("aria-label"))
-    else:
-        close = check(By.XPATH, './/button', j)
-        close.click()
-        print("Closed", jobs.index(j))
-        continue
-
-    continueApplying = check(By.XPATH, '/html/body/div[3]/div/div/div[3]/div/div/button')
-    if continueApplying:
-        continueApplying.click()
-
-    b = True
-    while b is True:
+    try:
+        driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'start' });", j)
         time.sleep(2)
-        proceed = check_all(By.CSS_SELECTOR, '.display-flex.justify-flex-end.ph5.pv4 button')[-1]
+        j.click()
+        time.sleep(1)
+        easyApply = check(By.CLASS_NAME, "jobs-apply-button--top-card")
+        if easyApply:
+            easyApply.click()
+            print("Started", easyApply.get_attribute("aria-label"))
+        else:
+            close = check(By.XPATH, './/button', j)
+            close.click()
+            print("Closed", jobs.index(j))
+            continue
 
-        if proceed.get_attribute("aria-label") == 'Submit application':
-            flw = check(By.CLASS_NAME, 'job-details-easy-apply-footer__section')
-            if flw:
-                flw.click()
+        continueApplying = check(By.XPATH, '/html/body/div[3]/div/div/div[3]/div/div/button')
+        if continueApplying:
+            time.sleep(1)
+            continueApplying.click()
 
-            b = False
-        proceed.click()
-    else:
-        time.sleep(2)
-        close2 = check(By.XPATH, "//*[@aria-label='Dismiss']")
-        close2.click()
-    time.sleep(1)
+        b = True
+        while b is True:
+            proceed = check_all(By.CSS_SELECTOR, '.display-flex.justify-flex-end.ph5.pv4 button')[-1]
+            driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'end' });", proceed)
+            time.sleep(2)
+            if proceed.get_attribute("aria-label") == 'Submit application':
+                flw = check(By.CLASS_NAME, 'job-details-easy-apply-footer__section')
+                if flw:
+                    flw.click()
+
+                b = False
+            proceed.click()
+        else:
+            time.sleep(2)
+            close2 = check(By.XPATH, "//*[@aria-label='Dismiss']")
+            close2.click()
+        time.sleep(1)
+    except Exception as e:
+        print(e)
