@@ -16,15 +16,25 @@ driver.get(
     "https://www.linkedin.com/jobs/search/?f_AL=true&f_E=1&f_WT=2&geoId=102713980&keywords=Python&origin=JOB_SEARCH_PAGE_JOB_FILTER&refresh=true"
 )
 
-wait = WebDriverWait(driver, 10)
-jobs = wait.until(
-    EC.presence_of_all_elements_located((By.XPATH, '//*[@id="main"]/div/div[2]/div[1]/div/ul/li/div/div')))
+
+def wait_for_element(locator, context=driver):
+    return WebDriverWait(context, 10).until(
+        EC.element_to_be_clickable(locator)
+    )
+
+
+def wait_for_elements(locator, context=driver):
+    return WebDriverWait(context, 10).until(
+        EC.presence_of_all_elements_located(locator)
+    )
 
 
 def check(criteria, val, parent=driver):
     try:
         print(parent)
         element = parent.find_element(criteria, val)
+        driver.execute_script("arguments[0].scrollIntoView();", element)
+
         return element
     except Exception as e:
         print(e)
@@ -41,34 +51,40 @@ def check_all(criteria, val, parent=driver):
         return None
 
 
+jobs = wait_for_elements((By.XPATH, '//*[@id="main"]/div/div[2]/div[1]/div/ul/li/div/div'))
+
 for j in jobs:
+    driver.execute_script("arguments[0].scrollIntoView();", j)
+
     j.click()
-    time.sleep(0.2)
-    easyapply = check(By.CLASS_NAME, "jobs-apply-button--top-card")
-    if easyapply:
-        easyapply.click()
-        print("Started", easyapply.get_attribute("aria-label"))
+    time.sleep(1)
+    easyApply = check(By.CLASS_NAME, "jobs-apply-button--top-card")
+    if easyApply:
+        easyApply.click()
+        print("Started", easyApply.get_attribute("aria-label"))
     else:
-        close = check(By.XPATH, './/button', j)
+        close = wait_for_element((By.XPATH, './/button'), j)
         close.click()
         print("Closed", jobs.index(j))
         continue
 
-    continueApplying = check(By.CSS_SELECTOR,
-                             ".jobs-apply-button artdeco-button artdeco-button--3 artdeco-button--primary ember-view")
+    continueApplying = check(By.XPATH, '/html/body/div[3]/div/div/div[3]/div/div/button')
     if continueApplying:
         continueApplying.click()
 
     b = True
     while b is True:
-        time.sleep(3)
+        time.sleep(2)
         proceed = check_all(By.CSS_SELECTOR, '.display-flex.justify-flex-end.ph5.pv4 button')[-1]
+
         if proceed.get_attribute("aria-label") == 'Submit application':
-            check(By.CLASS_NAME, 'job-details-easy-apply-footer__section').click()
+            flw = check(By.CLASS_NAME, 'job-details-easy-apply-footer__section')
+            if flw:
+                flw.click()
+
             b = False
         proceed.click()
-
-    close2 = wait.until(
-        EC.presence_of_element_located((By.XPATH, '/html/body/div[3]/div/div/button'))
-    )
-    close2.click()
+    else:
+        close2 = wait_for_element((By.XPATH, "//*[@aria-label='Dismiss']"))
+        close2.click()
+    time.sleep(1)
