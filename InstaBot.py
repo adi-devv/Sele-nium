@@ -25,5 +25,6 @@ for i in flws:
     try:
         i.click()
     except Exception as e:
-        print(e)
+        print("Exception",e)
+
         continue
