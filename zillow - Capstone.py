@@ -33,3 +33,4 @@ for i, v in enumerate(links):
     entries[2].send_keys(v)
     submit.click()
     driver.find_element(By.LINK_TEXT, "Submit another response").click()
+driver.quit()
