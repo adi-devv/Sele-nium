@@ -38,9 +38,41 @@ classroomCodes = {
     'MAT3003': 'NzEwNjMyODcwNzA1'
 }
 
+def wait_for_element(locator, context=driver):
+    return WebDriverWait(context, 10).until(
+        EC.element_to_be_clickable(locator)
+    )
+def wait_for_elements(locator, context=driver):
+    return WebDriverWait(context, 20).until(
+        EC.presence_of_all_elements_located(locator)
+    )
 
 def startMeeting(link):
+    if link is None:
+        print("Classroom Not Yet Created")
+        return
     driver.get(link)
+    joinButton = wait_for_element((By.XPATH,'//*[@id="yDmH0d"]/c-wiz/div[2]/div/div[7]/div[2]/aside/div/div[2]/div/div[2]/div/a'))
+    joinButton.click()
+    time.sleep(5)
+    driver.scro
+    mic_button = wait_for_element((By.CSS_SELECTOR, 'div[aria-label="Turn off microphone"]'))
+    cam_button = wait_for_element((By.CSS_SELECTOR, 'div[aria-label="Turn off camera"]'))
+    if mic_button.get_attribute('data-is-muted') == 'false':
+        mic_button.click()
+
+    # Toggle the camera button
+    if cam_button.get_attribute('data-is-muted') == 'false':
+        cam_button.click()
+    joinNow = wait_for_element((By.CSS_SELECTOR,'.UywwFc-LgbsSe.UywwFc-LgbsSe-OWXEXe-dgl2Hf.q9a6Xc.tusd3.IyLmn'))
+    joinNow.click()
+    #
+    # mute_hide = wait_for_element((By.XPATH, '//*[@jsname="BOHaEe"]'))
+    # if mute_hide:
+    #         print(mute_hide,'clicked')
+    #         mute_hide.click()
+    # else:
+    #     print("No elements found to mute or hide.")
 
 
 while True:
@@ -51,6 +83,8 @@ while True:
     for day, table in time_table.items():
         if day == today:
             for slot, subject in table.items():
+                if current_time == slot:
+                    startMeeting('https://classroom.google.com/u/2/c/' + classroomCodes[subject])
 
-
+    startMeeting('https://classroom.google.com/u/2/c/NzEwMzE3MjkyODcw')
     time.sleep(300)
