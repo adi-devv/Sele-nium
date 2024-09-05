@@ -28,11 +28,11 @@ time_table = {
 
 classroomCodes = {
     'CSA3004': 'NzEwOTkwMDMxNDQw',  # Data Visualization
-    'CSA4002': '',  # Artificial Neural Networks
+    'CSA4002': None,  # Artificial Neural Networks
     'CSA4005': 'NzEwMzE3MjkyODcw',  # Expert Systems and Fuzzy Logic
     'CSE3001': 'NzEwOTQzMzc4MTM1',  # Database Management Systems
     'CSE3010': 'NzEwOTQ0MjU3NTM1',  # Computer Vision
-    'CSG2003': '',  # Human Computer Interaction
+    'CSG2003': None,  # Human Computer Interaction
     'HUM0001': 'NzEwNzQ3ODg5NjY0',  # Ethics And Values
     'MAT3003': 'NzEwNjMyODcwNzA1',  # Probability, Statistics and Reliability
 }
@@ -46,6 +46,7 @@ def startMeeting(link):
     if link is None:
         print("Classroom Not Yet Created")
         return
+    link = 'https://classroom.google.com/u/2/c/' + link
     driver.get(link)
 
     try:
@@ -85,6 +86,6 @@ while True:
                 if withinSlot(now, slot):
                     if len(driver.window_handles) > 1:
                         driver.quit()
-                    startMeeting('https://classroom.google.com/u/2/c/' + classroomCodes.get(subject, None))
+                    startMeeting(classroomCodes.get(subject))
 
     time.sleep(60)
