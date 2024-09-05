@@ -10,10 +10,10 @@ logging.basicConfig(filename='automation.log', level=logging.INFO, format='%(asc
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
-options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')
+options.add_argument(r'user-data-dir=C:\Users\<YOUR DEVICE NAME>\AppData\Local\Google\Chrome\User Data')
 driver = webdriver.Chrome(options=options)
 
-time_table = {
+time_table = {                  #UPDATE THE TIMETABLE
     'Monday': {
         '8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002', '1:15': 'CSA4005', '2:50': 'MAT3003'
     },
@@ -29,7 +29,7 @@ time_table = {
     },
 }
 
-classroomCodes = {
+classroomCodes = {                #UPDATE THE CLASSROOM CODES
     'CSA3004': 'NzEwOTkwMDMxNDQw',  # Data Visualization
     'CSA4002': None,  # Artificial Neural Networks
     'CSA4005': 'NzEwMzE3MjkyODcw',  # Expert Systems and Fuzzy Logic
