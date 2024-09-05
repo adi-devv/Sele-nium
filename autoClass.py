@@ -32,7 +32,7 @@ classroomCodes = {
     'CSA4005': 'NzEwMzE3MjkyODcw',  # Expert Systems and Fuzzy Logic
     'CSE3001': 'NzEwOTQzMzc4MTM1',  # Database Management Systems
     'CSE3010': 'NzEwOTQ0MjU3NTM1',  # Computer Vision
-    'CSG2003': None,  # Human Computer Interaction
+    'CSG2003': 'NzA1NTU0MzUwNzAz',  # Human Computer Interaction
     'HUM0001': 'NzEwNzQ3ODg5NjY0',  # Ethics And Values
     'MAT3003': 'NzEwNjMyODcwNzA1',  # Probability, Statistics and Reliability
 }
