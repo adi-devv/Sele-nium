@@ -99,8 +99,7 @@ while True:
                             driver.close()
                         startMeeting(classroomCodes.get(subject))
 
-        time.sleep(60)
 
     except Exception as e:
         logging.error(f"Error in the main loop: {e}")
-        time.sleep(60)
+    time.sleep(60)
