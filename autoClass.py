@@ -31,7 +31,7 @@ time_table = {
 
 classroomCodes = {
     'CSA3004': 'NzEwOTkwMDMxNDQw',  # Data Visualization
-    'CSA4002': None,  # Artificial Neural Networks
+    'CSA4002': 'NzExMDA4OTM2Nzg1',  # Artificial Neural Networks
     'CSA4005': 'NzEwMzE3MjkyODcw',  # Expert Systems and Fuzzy Logic
     'CSE3001': 'NzEwOTQzMzc4MTM1',  # Database Management Systems
     'CSE3010': 'NzEwOTQ0MjU3NTM1',  # Computer Vision
