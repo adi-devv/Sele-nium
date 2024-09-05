@@ -4,6 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import logging
+
+logging.basicConfig(filename='automation.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
@@ -39,8 +42,11 @@ classroomCodes = {
 
 
 def wait_for(by, value, condition=EC.element_to_be_clickable):
-    return WebDriverWait(driver, 10).until(condition((by, value)))
-
+    try:
+        return WebDriverWait(driver, 10).until(condition((by, value)))
+    except Exception as e:
+        logging.error(f"Error waiting for element {by} - {value}: {e}")
+        raise
 
 def startMeeting(link):
     if link is None:
@@ -70,22 +76,31 @@ def startMeeting(link):
 
 
 def withinSlot(nowT, slot):
-    slotT = datetime.strptime(slot, "%H:%M")
-    endT = slotT + timedelta(minutes=90)
-    return slotT.time() <= nowT.time() <= endT.time()
+    try:
+        slotT = datetime.strptime(slot, "%H:%M")
+        endT = slotT + timedelta(minutes=90)
+        return slotT.time() <= nowT.time() <= endT.time()
+    except ValueError as ve:
+        logging.error(f"Error parsing time slot: {slot} - {ve}")
+        return False
 
 
 while True:
-    now = datetime.now()
-    today = now.strftime("%A")
-    current_time = now.strftime("%H:%M")
+    try:
+        now = datetime.now()
+        today = now.strftime("%A")
+        current_time = now.strftime("%H:%M")
 
-    for day, table in time_table.items():
-        if day == today:
-            for slot, subject in table.items():
-                if withinSlot(now, slot):
-                    if len(driver.window_handles) > 1:
-                        driver.quit()
-                    startMeeting(classroomCodes.get(subject))
+        for day, table in time_table.items():
+            if day == today:
+                for slot, subject in table.items():
+                    if withinSlot(now, slot):
+                        if len(driver.window_handles) > 1:
+                            driver.close()
+                        startMeeting(classroomCodes.get(subject))
 
-    time.sleep(60)
+        time.sleep(60)
+
+    except Exception as e:
+        logging.error(f"Error in the main loop: {e}")
+        time.sleep(60)
