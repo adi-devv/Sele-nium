@@ -10,36 +10,34 @@ logging.basicConfig(filename='automation.log', level=logging.INFO, format='%(asc
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
-options.add_argument(r'user-data-dir=C:\Users\<YOUR DEVICE NAME>\AppData\Local\Google\Chrome\User Data')
+options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')
 driver = webdriver.Chrome(options=options)
 
-time_table = {                  #UPDATE THE TIMETABLE
+time_table = {
     'Monday': {
-        '8:30': 'CSA3004', '10:05': 'CSE3001', '1:15': 'CSA4005', '2:50': 'MAT3003'
+        '8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002', '1:15': 'CSA4005', '2:50': 'MAT3003'
     },
     'Tuesday': {
         '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003',
     },
-    'Wednesday': {
-        '8:30': 'CSA3004', '11:40': 'CSA4002'
-    },
+    'Wednesday': {'8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002'},
     'Thursday': {
-        '8:30': 'MAT3003', '2:50': 'HUM0001',
+        '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003', '2:50': 'HUM0001',
     },
     'Friday': {
-        '10:05': 'CSE3001', '11:40': 'CSA4002',
+        '10:05': 'CSE3001', '11:40': 'CSA4002', '1:15': 'CSA4005',
     },
 }
 
-classroomCodes = {                #UPDATE THE CLASSROOM CODES
-    'CSA3004': 'NzEwOTkwMAMxNDQw',  # Data Visualization
-    'CSA4002': '',  # Artificial Neural Networks
-    'CSA4005': '',  # Expert Systems and Fuzzy Logic
-    'CSE3001': '',  # Database Management Systems
-    'CSE3010': '',  # Computer Vision
-    'CSG2003': '',  # Human Computer Interaction
-    'HUM0001': '',  # Ethics And Values
-    'MAT3003': '',  # Probability, Statistics and Reliability
+classroomCodes = {
+    'CSA3004': 'NzEwOTkwMDMxNDQw',  # Data Visualization
+    'CSA4002': None,  # Artificial Neural Networks
+    'CSA4005': 'NzEwMzE3MjkyODcw',  # Expert Systems and Fuzzy Logic
+    'CSE3001': 'NzEwOTQzMzc4MTM1',  # Database Management Systems
+    'CSE3010': 'NzEwOTQ0MjU3NTM1',  # Computer Vision
+    'CSG2003': 'NzA1NTU0MzUwNzAz',  # Human Computer Interaction
+    'HUM0001': 'NzEwNzQ3ODg5NjY0',  # Ethics And Values
+    'MAT3003': 'NzEwNjMyODcwNzA1',  # Probability, Statistics and Reliability
 }
 
 
@@ -54,8 +52,10 @@ def startMeeting(link):
     if link is None:
         print("Classroom Not Yet Created")
         return
+    print("Starting meeting")
     link = 'https://classroom.google.com/u/2/c/' + link
     driver.get(link)
+    print("Link opened")
 
     try:
         joinButton = wait_for(
@@ -102,7 +102,7 @@ while True:
                         driver.switch_to.window(driver.window_handles[0])
                         startMeeting(classroomCodes.get(subject))
 
-
     except Exception as e:
         logging.error(f"Error in the main loop: {e}")
     time.sleep(60)
+    print("running")
