@@ -17,16 +17,8 @@ driver.get(
 )
 
 
-def wait_for_element(locator, context=driver):
-    return WebDriverWait(context, 10).until(
-        EC.element_to_be_clickable(locator)
-    )
-
-
-def wait_for_elements(locator, context=driver):
-    return WebDriverWait(context, 10).until(
-        EC.presence_of_all_elements_located(locator)
-    )
+def wait_for(by, value, condition=EC.element_to_be_clickable):
+    return WebDriverWait(driver, 10).until(condition((by, value)))
 
 
 def check(criteria, val, parent=driver):
@@ -51,7 +43,7 @@ def check_all(criteria, val, parent=driver):
 
 
 time.sleep(3)
-jobs = wait_for_elements((By.XPATH, '//*[@id="main"]/div/div[2]/div[1]/div/ul/li/div/div'))
+jobs = wait_for(By.XPATH, '//*[@id="main"]/div/div[2]/div[1]/div/ul/li/div/div', EC.presence_of_all_elements_located)
 print(len(jobs))
 for j in jobs:
     try:

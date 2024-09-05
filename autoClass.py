@@ -1,6 +1,5 @@
 import time
-from datetime import datetime
-
+from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -28,51 +27,51 @@ time_table = {
 }
 
 classroomCodes = {
-    'CSA3004': '',
-    'CSA4002': '',
-    'CSA4005': 'NzEwMzE3MjkyODcw',
-    'CSE3001': '',
-    'CSE3010': '',
-    'CSG2003': '',
-    'HUM0001': 'NzEwNzQ3ODg5NjY0',
-    'MAT3003': 'NzEwNjMyODcwNzA1'
+    'CSA3004': 'NzEwOTkwMDMxNDQw',  # Data Visualization
+    'CSA4002': '',  # Artificial Neural Networks
+    'CSA4005': 'NzEwMzE3MjkyODcw',  # Expert Systems and Fuzzy Logic
+    'CSE3001': 'NzEwOTQzMzc4MTM1',  # Database Management Systems
+    'CSE3010': 'NzEwOTQ0MjU3NTM1',  # Computer Vision
+    'CSG2003': '',  # Human Computer Interaction
+    'HUM0001': 'NzEwNzQ3ODg5NjY0',  # Ethics And Values
+    'MAT3003': 'NzEwNjMyODcwNzA1',  # Probability, Statistics and Reliability
 }
 
-def wait_for_element(locator, context=driver):
-    return WebDriverWait(context, 10).until(
-        EC.element_to_be_clickable(locator)
-    )
-def wait_for_elements(locator, context=driver):
-    return WebDriverWait(context, 20).until(
-        EC.presence_of_all_elements_located(locator)
-    )
+
+def wait_for(by, value, condition=EC.element_to_be_clickable):
+    return WebDriverWait(driver, 10).until(condition((by, value)))
+
 
 def startMeeting(link):
     if link is None:
         print("Classroom Not Yet Created")
         return
     driver.get(link)
-    joinButton = wait_for_element((By.XPATH,'//*[@id="yDmH0d"]/c-wiz/div[2]/div/div[7]/div[2]/aside/div/div[2]/div/div[2]/div/a'))
-    joinButton.click()
-    time.sleep(5)
-    driver.scro
-    mic_button = wait_for_element((By.CSS_SELECTOR, 'div[aria-label="Turn off microphone"]'))
-    cam_button = wait_for_element((By.CSS_SELECTOR, 'div[aria-label="Turn off camera"]'))
-    if mic_button.get_attribute('data-is-muted') == 'false':
-        mic_button.click()
 
-    # Toggle the camera button
-    if cam_button.get_attribute('data-is-muted') == 'false':
-        cam_button.click()
-    joinNow = wait_for_element((By.CSS_SELECTOR,'.UywwFc-LgbsSe.UywwFc-LgbsSe-OWXEXe-dgl2Hf.q9a6Xc.tusd3.IyLmn'))
-    joinNow.click()
-    #
-    # mute_hide = wait_for_element((By.XPATH, '//*[@jsname="BOHaEe"]'))
-    # if mute_hide:
-    #         print(mute_hide,'clicked')
-    #         mute_hide.click()
-    # else:
-    #     print("No elements found to mute or hide.")
+    try:
+        joinButton = wait_for(
+            By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div[2]/div/div[7]/div[2]/aside/div/div[2]/div/div[2]/div/a')
+        joinButton.click()
+
+        time.sleep(5)
+        driver.switch_to.window(driver.window_handles[-1])
+
+        mute_hide = wait_for(By.XPATH, '//*[@jsname="BOHaEe"]', EC.presence_of_all_elements_located)[:2]
+        for i in mute_hide:
+            if i.get_attribute("data-is-muted") == "false":
+                i.click()
+
+        joinNow = wait_for(By.CSS_SELECTOR, '.UywwFc-LgbsSe.UywwFc-LgbsSe-OWXEXe-dgl2Hf.q9a6Xc.tusd3.IyLmn')
+        joinNow.click()
+
+    except Exception as e:
+        print(e)
+
+
+def withinSlot(nowT, slot):
+    slotT = datetime.strptime(slot, "%H:%M")
+    endT = slotT + timedelta(minutes=90)
+    return slotT.time() <= nowT.time() <= endT.time()
 
 
 while True:
@@ -83,8 +82,9 @@ while True:
     for day, table in time_table.items():
         if day == today:
             for slot, subject in table.items():
-                if current_time == slot:
-                    startMeeting('https://classroom.google.com/u/2/c/' + classroomCodes[subject])
+                if withinSlot(now, slot):
+                    if len(driver.window_handles) > 1:
+                        driver.quit()
+                    startMeeting('https://classroom.google.com/u/2/c/' + classroomCodes.get(subject, None))
 
-    startMeeting('https://classroom.google.com/u/2/c/NzEwMzE3MjkyODcw')
-    time.sleep(300)
+    time.sleep(60)
