@@ -52,8 +52,10 @@ def startMeeting(link):
     if link is None:
         print("Classroom Not Yet Created")
         return
+    print("Starting meeting")
     link = 'https://classroom.google.com/u/2/c/' + link
     driver.get(link)
+    print("Link opened")
 
     try:
         joinButton = wait_for(
@@ -97,10 +99,10 @@ while True:
                     if withinSlot(now, slot):
                         if len(driver.window_handles) > 1:
                             driver.close()
+                        driver.switch_to.window(driver.window_handles[0])
                         startMeeting(classroomCodes.get(subject))
-
-        time.sleep(60)
 
     except Exception as e:
         logging.error(f"Error in the main loop: {e}")
-        time.sleep(60)
+    time.sleep(60)
+    print("running")
