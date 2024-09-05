@@ -85,6 +85,7 @@ def withinSlot(nowT, slot):
         return False
 
 
+
 while True:
     try:
         now = datetime.now()
