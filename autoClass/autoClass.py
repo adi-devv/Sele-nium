@@ -13,9 +13,9 @@ options.add_experimental_option('detach', True)
 options.add_argument(r'user-data-dir=C:\Users\<YOUR DEVICE NAME>\AppData\Local\Google\Chrome\User Data')
 driver = webdriver.Chrome(options=options)
 
-time_table = {                  #UPDATE THE TIMETABLE
+time_table = {                  #UPDATE THE TIMETABLE 24 HOUR FORMAT
     'Monday': {
-        '8:30': 'CSA3004', '10:05': 'CSE3001', '1:15': 'CSA4005', '2:50': 'MAT3003'
+        '8:30': 'CSA3004', '10:05': 'CSE3001', '13:15': 'CSA4005', '14:50': 'MAT3003'
     },
     'Tuesday': {
         '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003',
