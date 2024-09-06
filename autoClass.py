@@ -48,6 +48,7 @@ def wait_for(by, value, condition=EC.element_to_be_clickable):
         logging.error(f"Error waiting for element {by} - {value}: {e}")
         raise
 
+
 def startMeeting(link):
     if link is None:
         print("Classroom Not Yet Created")
@@ -60,6 +61,8 @@ def startMeeting(link):
     try:
         joinButton = wait_for(
             By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div[2]/div/div[7]/div[2]/aside/div/div[2]/div/div[2]/div/a')
+        driver.execute_script('arguments[0].scrollIntoView({ behavior: "smooth", block: "end" });', joinButton)
+
         joinButton.click()
 
         time.sleep(5)
@@ -77,16 +80,6 @@ def startMeeting(link):
         print(e)
 
 
-def withinSlot(nowT, slot):
-    try:
-        slotT = datetime.strptime(slot, "%H:%M")
-        endT = slotT + timedelta(minutes=90)
-        return slotT.time() <= nowT.time() <= endT.time()
-    except ValueError as ve:
-        logging.error(f"Error parsing time slot: {slot} - {ve}")
-        return False
-
-
 while True:
     try:
         now = datetime.now()
@@ -96,11 +89,16 @@ while True:
         for day, table in time_table.items():
             if day == today:
                 for slot, subject in table.items():
-                    if withinSlot(now, slot):
+                    slotT = datetime.combine(now.date(), datetime.strptime(slot, "%H:%M").time())
+                    endT = slotT + timedelta(minutes=90)
+                    if slotT.time() <= now.time() <= endT.time():
                         if len(driver.window_handles) > 1:
                             driver.close()
                         driver.switch_to.window(driver.window_handles[0])
                         startMeeting(classroomCodes.get(subject))
+
+                        timer = (endT-now).total_seconds()
+                        time.sleep(timer)
 
     except Exception as e:
         logging.error(f"Error in the main loop: {e}")
