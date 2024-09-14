@@ -1,45 +1,46 @@
 import time
 from datetime import datetime, timedelta
+import logging
+from notmgr import notmgr
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import logging
 
 logging.basicConfig(filename='automation.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+notmgr = notmgr()
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
-options.add_argument(r'user-data-dir=C:\Users\<YOUR DEVICE NAME>\AppData\Local\Google\Chrome\User Data')
+options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')
 driver = webdriver.Chrome(options=options)
 
-time_table = {                  #UPDATE THE TIMETABLE 24 HOUR FORMAT
+time_table = {
     'Monday': {
-        '8:30': 'CSA3004', '10:05': 'CSE3001', '13:15': 'CSA4005', '14:50': 'MAT3003'
+        '8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005', '14:50': 'MAT3003'
     },
     'Tuesday': {
         '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003',
     },
-    'Wednesday': {
-        '8:30': 'CSA3004', '11:40': 'CSA4002'
-    },
+    'Wednesday': {'8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002'},
     'Thursday': {
-        '8:30': 'MAT3003', '2:50': 'HUM0001',
+        '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003', '14:50': 'HUM0001',
     },
     'Friday': {
-        '10:05': 'CSE3001', '11:40': 'CSA4002',
+        '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005',
     },
+    'Saturday': {'16:00': 'CSE3001'},
 }
 
-classroomCodes = {#UPDATE THE CLASSROOM CODES
-    'CSA3004': 'NzEwOTkwMAMxNDQw',  # Data Visualization
-    'CSA4002': '',  # Artificial Neural Networks
-    'CSA4005': '',  # Expert Systems and Fuzzy Logic
-    'CSE3001': '',  # Database Management Systems
-    'CSE3010': '',  # Computer Vision
-    'CSG2003': '',  # Human Computer Interaction
-    'HUM0001': '',  # Ethics And Values
-    'MAT3003': '',  # Probability, Statistics and Reliability
+classroomCodes = {
+    'CSA3004': ['NzEwOTkwMDMxNDQw', 'Data Visualization'],
+    'CSA4002': ['NzExMDA4OTM2Nzg1', 'Artificial Neural Networks'],
+    'CSA4005': ['NzEwMzE3MjkyODcw', 'Expert Systems and Fuzzy Logic'],
+    'CSE3001': ['NzEwOTQzMzc4MTM1', 'Database Management Systems'],
+    'CSE3010': ['NzEwOTQ0MjU3NTM1', 'Computer Vision'],
+    'CSG2003': ['NzA1NTU0MzUwNzAz', 'Human Computer Interaction'],
+    'HUM0001': ['NzEwNzQ3ODg5NjY0', 'Ethics And Values'],
+    'MAT3003': ['NzEwNjMyODcwNzA1', 'Probability, Statistics and Reliability']
 }
 
 
@@ -51,12 +52,10 @@ def wait_for(by, value, condition=EC.element_to_be_clickable):
         raise
 
 
-def startMeeting(link):
-    if link is None:
-        print("Classroom Not Yet Created")
-        return
+def startMeeting(sub):
+    code = classroomCodes[sub]
     print("Starting meeting")
-    link = 'https://classroom.google.com/u/2/c/' + link
+    link = 'https://classroom.google.com/u/2/c/' + code[0]
     driver.get(link)
     print("Link opened")
 
@@ -78,8 +77,13 @@ def startMeeting(link):
         joinNow = wait_for(By.CSS_SELECTOR, '.UywwFc-LgbsSe.UywwFc-LgbsSe-OWXEXe-dgl2Hf.q9a6Xc.tusd3.IyLmn')
         joinNow.click()
 
+
+        notmgr.notify(f"Meeting Started For {sub} - {code[1]}")
+
     except Exception as e:
         print(e)
+        notmgr.notify(f"Error - couldn't start meeting for {sub} - {code[1]}")
+
 
 
 while True:
@@ -97,9 +101,9 @@ while True:
                         if len(driver.window_handles) > 1:
                             driver.close()
                         driver.switch_to.window(driver.window_handles[0])
-                        startMeeting(classroomCodes.get(subject))
+                        startMeeting(subject)
 
-                        timer = (endT-now).total_seconds()
+                        timer = (endT - now).total_seconds()
                         time.sleep(timer)
 
     except Exception as e:
