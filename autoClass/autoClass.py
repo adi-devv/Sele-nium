@@ -28,8 +28,7 @@ time_table = {
     },
     'Friday': {
         '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005',
-    },
-    'Saturday': {'16:00': 'CSE3001'},
+    }
 }
 
 classroomCodes = {
@@ -47,8 +46,8 @@ classroomCodes = {
 def wait_for(by, value, condition=EC.element_to_be_clickable):
     try:
         return WebDriverWait(driver, 10).until(condition((by, value)))
-    except Exception as e:
-        logging.error(f"Error waiting for element {by} - {value}: {e}")
+    except Exception as exc:
+        logging.error(f"Error waiting for element {by} - {value}: {exc}")
         raise
 
 
@@ -77,7 +76,6 @@ def startMeeting(sub):
         joinNow = wait_for(By.CSS_SELECTOR, '.UywwFc-LgbsSe.UywwFc-LgbsSe-OWXEXe-dgl2Hf.q9a6Xc.tusd3.IyLmn')
         joinNow.click()
 
-
         notmgr.notify(f"Meeting Started For {sub} - {code[1]}")
 
     except Exception as e:
@@ -85,28 +83,26 @@ def startMeeting(sub):
         notmgr.notify(f"Error - couldn't start meeting for {sub} - {code[1]}")
 
 
-
 while True:
-    try:
-        now = datetime.now()
-        today = now.strftime("%A")
-        current_time = now.strftime("%H:%M")
+    now = datetime.now()
+    today = now.strftime("%A")
+    current_time = now.strftime("%H:%M")
 
-        for day, table in time_table.items():
-            if day == today:
-                for slot, subject in table.items():
-                    slotT = datetime.combine(now.date(), datetime.strptime(slot, "%H:%M").time())
-                    endT = slotT + timedelta(minutes=90)
-                    if slotT.time() <= now.time() <= endT.time():
-                        if len(driver.window_handles) > 1:
-                            driver.close()
-                        driver.switch_to.window(driver.window_handles[0])
+    for day, table in time_table.items():
+        if day == today:
+            for slot, subject in table.items():
+                slotT = datetime.combine(now.date(), datetime.strptime(slot, "%H:%M").time())
+                endT = slotT + timedelta(minutes=90)
+                if slotT.time() <= now.time() <= endT.time():
+                    if len(driver.window_handles) > 1:
+                        driver.close()
+                    driver.switch_to.window(driver.window_handles[0])
+                    try:
                         startMeeting(subject)
+                    except Exception as e:
+                        logging.error(f"HTTP error during meeting start: {e}")
+                    timer = (endT - now).total_seconds()
+                    time.sleep(timer)
 
-                        timer = (endT - now).total_seconds()
-                        time.sleep(timer)
-
-    except Exception as e:
-        logging.error(f"Error in the main loop: {e}")
     time.sleep(60)
     print("running")
