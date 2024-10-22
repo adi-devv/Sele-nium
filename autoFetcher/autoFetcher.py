@@ -1,6 +1,5 @@
 import re
 import time
-
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 from selenium.common.exceptions import NoSuchElementException
+from openpyxl import load_workbook
 
 logging.basicConfig(filename='automation.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -23,44 +23,69 @@ def wait_for(by, value, condition=EC.element_to_be_clickable):
         return WebDriverWait(driver, 10).until(condition((by, value)))
     except Exception as exc:
         logging.error(f"Error waiting for element {by} - {value}: {exc}")
-        raise
+        return None  # Return None instead of raising an exception
 
 
-file = pd.read_excel(r"D:\Aadit\PESL\Book1.xlsx")
-links = ['URL'].dropna().tolist()
+file_path = r"D:\Aadit\PESL\Book1.xlsx"
+book = load_workbook(file_path)
+pasted_sheet = book['Details']
+pasted_rows = pasted_sheet.max_row
+file = pd.read_excel(file_path, sheet_name='Connections')
+links = file['URL'].dropna()[pasted_rows:].tolist()
 data_list = []
 
+count = 0
 for link in links:
-    row = file[file['URL'] == link].iloc[0]
-    data = {
-        'URL': link,
-        'Full Name': row['First Name'] + row['Last Name'],
-        'Company': row['Company'],
-        'Position': row['Position'],
-    }
+    count += 1
+    try:
+        row = file[file['URL'] == link].iloc[0]
+        data = {
+            'URL': link,
+            'Full Name': row['First Name'] + ' ' + row['Last Name'],
+            'Company': row['Company'],
+            'Position': row['Position'],
+        }
 
-    driver.get(link + '/overlay/contact-info/')
-    data['City'] = wait_for(By.CSS_SELECTOR, '.text-body-small.inline.t-black--light.break-words').text.split(',')[0]
-    details = wait_for(By.CSS_SELECTOR, '.pv-contact-info__contact-type',
-                       EC.presence_of_all_elements_located)[1:]
+        driver.get(link + '/overlay/contact-info/')
 
-    for d in details:
-        tag = d.find_element(By.XPATH, './h3').text
-        val = d.find_element(By.CSS_SELECTOR, '.dFJgnJSrzWlZUXEQJeDCapdaQVlYxovJYzc.t-14').text
-        if tag == "Phone":
-            match = re.search(r'(\+91)?(\d{10})', val)
-            val = match.group(2)
-        elif tag == "Website":
-            val.strip()[0]
-        data[tag] = val
-    print(data)
-    data_list.append(data)
+        city_element = wait_for(By.CSS_SELECTOR, '.text-body-small.inline.t-black--light.break-words')
+        data['City'] = city_element.text.split(',')[0] if city_element else 'N/A'
 
-all_keys = set().union(*(entry.keys() for entry in data_list))
-normalized_data = [{key: entry.get(key, '') for key in all_keys} for entry in data_list]
-desired_order = ['URL', 'Full Name', 'Company', 'Position', 'City', 'Phone', 'Email', 'Birthday', 'Connected', 'Address', 'Website', 'IM']
+        details = wait_for(By.CSS_SELECTOR, '.pv-contact-info__contact-type', EC.presence_of_all_elements_located)
+        if details:
+            details = details[1:]  # Skip the first element
 
-df = pd.DataFrame(normalized_data)[desired_order]
+            for d in details:
+                try:
+                    tag = d.find_element(By.XPATH, './h3').text
+                    val = d.find_element(By.CSS_SELECTOR, '.dFJgnJSrzWlZUXEQJeDCapdaQVlYxovJYzc.t-14').text
 
-with pd.ExcelWriter(r"D:\Aadit\PESL\Book1.xlsx", engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
-    df.to_excel(writer, index=False, header=True, sheet_name='Details')
+                    if tag == "Phone":
+                        match = re.search(r'(\+91)?(\d{10})', val)
+                        val = match.group(2) if match else 'N/A'
+                    elif tag == "Website":
+                        val = val.strip() if val.strip() else 'N/A'
+
+                    data[tag] = val
+
+                except NoSuchElementException as e:
+                    logging.error(f"Error finding details for {link} - {tag}: {e}")
+                    data[tag] = 'N/A'  # Default value for missing data
+
+        print(data)
+        data_list.append(data)
+
+    except Exception as e:
+        logging.error(f"Error processing link {link}: {e}")
+
+    if count % 50 == 0:
+        all_keys = set().union(*(d.keys() for d in data_list))
+        df = pd.DataFrame([{k: d.get(k, '') for k in all_keys} for d in data_list])[desired_order]
+
+        file_path = r"D:\Aadit\PESL\Book1.xlsx"
+        book = load_workbook(file_path)
+        startrow = book['Details'].max_row
+
+        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            df.to_excel(writer, index=False, header=False, sheet_name='Details', startrow=startrow)
+        data_list = []
