@@ -1,11 +1,14 @@
+import logging
+import os
 import time
 from datetime import datetime, timedelta
-import logging
-from notmgr import notmgr
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+from notmgr import notmgr
 
 logging.basicConfig(filename='automation.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -27,6 +30,9 @@ time_table = {
         '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003', '14:50': 'HUM0001',
     },
     'Friday': {
+        '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005',
+    },
+    'Saturday': {
         '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005',
     }
 }
@@ -88,21 +94,30 @@ while True:
     today = now.strftime("%A")
     current_time = now.strftime("%H:%M")
 
+    clg_over = True
+
     for day, table in time_table.items():
         if day == today:
             for slot, subject in table.items():
                 slotT = datetime.combine(now.date(), datetime.strptime(slot, "%H:%M").time())
                 endT = slotT + timedelta(minutes=90)
-                if slotT.time() <= now.time() <= endT.time():
-                    if len(driver.window_handles) > 1:
-                        driver.close()
-                    driver.switch_to.window(driver.window_handles[0])
-                    try:
-                        startMeeting(subject)
-                    except Exception as e:
-                        logging.error(f"HTTP error during meeting start: {e}")
-                    timer = (endT - now).total_seconds()
-                    time.sleep(timer)
+
+                if now.time() < endT.time():
+                    clg_over = False
+                    if slotT.time() <= now.time() <= endT.time():
+                        if len(driver.window_handles) > 1:
+                            driver.close()
+                        driver.switch_to.window(driver.window_handles[0])
+                        try:
+                            startMeeting(subject)
+                        except Exception as e:
+                            logging.error(f"HTTP error during meeting start: {e}")
+                        timer = (endT - now).total_seconds()
+                        time.sleep(timer)
+                    break
+
+    if clg_over:
+        os.system("shutdown /s /t 0")
 
     time.sleep(60)
     print("running")
