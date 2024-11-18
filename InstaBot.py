@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
 
-options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')  # Update this pathaa
+options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')  # Updatve this pathaa
 
 driver = webdriver.Chrome(options=options)
 driver.get(
