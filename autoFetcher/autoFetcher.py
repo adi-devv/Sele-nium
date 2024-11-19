@@ -33,9 +33,11 @@ pasted_rows = pasted_sheet.max_row
 file = pd.read_excel(file_path, sheet_name='Connections')
 links = file['URL'].dropna()[pasted_rows:].tolist()
 data_list = []
+desired_order = ['URL', 'Full Name', 'Company', 'Position', 'City', 'Phone', 'Email', 'Birthday', 'Connected', 'Address', 'Website', 'IM']
 
 count = 0
 for link in links:
+    time.sleep(3)
     count += 1
     try:
         row = file[file['URL'] == link].iloc[0]
@@ -78,8 +80,9 @@ for link in links:
     except Exception as e:
         logging.error(f"Error processing link {link}: {e}")
 
-    if count % 50 == 0:
+    if count % 500 == 0:
         all_keys = set().union(*(d.keys() for d in data_list))
+
         df = pd.DataFrame([{k: d.get(k, '') for k in all_keys} for d in data_list])[desired_order]
 
         file_path = r"D:\Aadit\PESL\Book1.xlsx"
