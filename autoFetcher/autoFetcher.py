@@ -1,5 +1,6 @@
 import re
 import time
+import random
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -14,6 +15,10 @@ logging.basicConfig(filename='automation.log', level=logging.INFO, format='%(asc
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
 options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')
+options.add_argument("start-maximized")
+options.add_argument("disable-infobars")
+options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_argument("window-size=1920x1080")
 
 driver = webdriver.Chrome(options=options)
 
@@ -37,7 +42,7 @@ desired_order = ['URL', 'Full Name', 'Company', 'Position', 'City', 'Phone', 'Em
 
 count = 0
 for link in links:
-    time.sleep(3)
+    time.sleep(random.randint(2, 5))
     count += 1
     try:
         row = file[file['URL'] == link].iloc[0]
@@ -48,7 +53,10 @@ for link in links:
             'Position': row['Position'],
         }
 
-        driver.get(link + '/overlay/contact-info/')
+        driver.get(link)
+
+        contact_info = wait_for(By.ID, 'top-card-text-details-contact-info')
+        contact_info.click()
 
         city_element = wait_for(By.CSS_SELECTOR, '.text-body-small.inline.t-black--light.break-words')
         data['City'] = city_element.text.split(',')[0] if city_element else 'N/A'
@@ -56,17 +64,10 @@ for link in links:
         details = wait_for(By.CSS_SELECTOR, '.pv-contact-info__contact-type', EC.presence_of_all_elements_located)
         if details:
             details = details[1:]  # Skip the first element
-
             for d in details:
                 try:
                     tag = d.find_element(By.XPATH, './h3').text
-                    val = d.find_element(By.CSS_SELECTOR, '.dFJgnJSrzWlZUXEQJeDCapdaQVlYxovJYzc.t-14').text
-
-                    if tag == "Phone":
-                        match = re.search(r'(\+91)?(\d{10})', val)
-                        val = match.group(2) if match else 'N/A'
-                    elif tag == "Website":
-                        val = val.strip() if val.strip() else 'N/A'
+                    val = d.find_element(By.CSS_SELECTOR, '.vaBaUoyvRPVHsMdwsdganXqklSMryPUp.link-without-visited-state.t-14').text
 
                     data[tag] = val
 
@@ -76,6 +77,9 @@ for link in links:
 
         print(data)
         data_list.append(data)
+
+        close_btn = wait_for(By.CSS_SELECTOR,'.artdeco-button.artdeco-button--circle.artdeco-button--muted.artdeco-button--2.artdeco-button--tertiary.ember-view.artdeco-modal__dismiss')
+        close_btn.click()
 
     except Exception as e:
         logging.error(f"Error processing link {link}: {e}")
@@ -92,3 +96,6 @@ for link in links:
         with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
             df.to_excel(writer, index=False, header=False, sheet_name='Details', startrow=startrow)
         data_list = []
+
+        if count==100:
+            break

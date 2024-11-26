@@ -16,16 +16,22 @@ notmgr = notmgr()
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
 options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')
+options.add_argument("start-maximized")
+options.add_argument("disable-infobars")
+
 driver = webdriver.Chrome(options=options)
 
 time_table = {
     'Monday': {
         '8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005', '14:50': 'MAT3003'
     },
-    'Tuesday': {
+    'Tuesday':
+        {
         '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003',
     },
-    'Wednesday': {'8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002'},
+    'Wednesday': {
+        '8:30': 'CSA3004', '10:05': 'CSE3001', '11:40': 'CSA4002',
+    },
     'Thursday': {
         '8:30': 'MAT3003', '10:05': 'CSE3010', '11:40': 'CSG2003', '14:50': 'HUM0001',
     },
@@ -33,7 +39,7 @@ time_table = {
         '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005',
     },
     'Saturday': {
-        '10:05': 'CSE3001', '11:40': 'CSA4002', '13:15': 'CSA4005',
+        '2:50': 'CSG2003',
     }
 }
 
