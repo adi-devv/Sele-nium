@@ -9,11 +9,9 @@ from selenium.webdriver.support import expected_conditions as EC
 options = webdriver.ChromeOptions()
 options.add_experimental_option('detach', True)
 
-#UPDATE THIS 
-options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')
+options.add_argument(r'user-data-dir=C:\Users\aadit\AppData\Local\Google\Chrome\User Data')  # Update this path
 
 driver = webdriver.Chrome(options=options)
-#UPDATE THIS ACCORDING TO UR PREF
 driver.get(
     'https://www.linkedin.com/jobs/search/?f_AL=true&f_E=1&f_WT=2&geoId=102713980&keywords=Python&origin=JOB_SEARCH_PAGE_JOB_FILTER&refresh=true'
 )
